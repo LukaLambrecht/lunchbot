@@ -1,0 +1,8 @@
+# ignore cached python
+**__pycache__**
+
+# ignore url endpoint
+URL.py
+
+# ignore log file
+log.txt
