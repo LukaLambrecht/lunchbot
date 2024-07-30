@@ -6,10 +6,14 @@ The first thing you will need is a so-called incoming webhook, which allows auto
 You'll receive a custom url that can be used to post automatic messages by making simple POST requests.
 In the `lunchbot` folder, make a file `URL.py` and write `lunchboturl = '<your URL>'` in it. Or store it in any other format you prefer, but in that case you'll have to fix the imports in `lunchbot.py`.
 
+Note: the incoming webhook and associated url are specific to a Mattermost team.
+Make sure to have selected the correct team when you create the webhook.
+The same webhook can be used within a team to send messages to multiple channels, that can be specified while making the POST request as detailed below (though a default channel can be set as well when creating the webhook).
+
 ### Making POST requests
 The script `lunchbot.py` takes care of formatting and posting the POST request correctly. Run the script with `python3 lunchbot.py -h` (or simply `./lunchbot.py -h`) to see a list of available options. You can specify:
 - message: either directly a text string, or a path to a `.txt` file holding the message you want to post. If not specified, a default test message will be used.
-- channel: name of the channel to post to. If not specified, the default channel chosen when creating the incoming webhook will be used.
+- channel: name of the channel to post to. Note that this name can be inferred from the url of the channel, and might be different from the name that is displayed in the left side menu bar. For example, for the channel displayed as 'Town Square', you should use the name 'town-square'. If the channel name is not specified, the default channel chosen when creating the incoming webhook will be used.
 Running the script should, if everything went well, post the specified message in the specified Mattermost channel.
 
 ### Setting up a cron job
