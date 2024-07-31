@@ -19,7 +19,8 @@ Running the script should, if everything went well, post the specified message i
 ### Setting up a cron job
 For automatic messages at specific days and/or times of the day, `lunchbot.py` can be executed in a `cron` job.
 More detailed information on `cron` jobs can be found for example [here](https://www.digitalocean.com/community/tutorials/how-to-use-cron-to-automate-tasks-ubuntu-1804).
-As an example, one could add the following line to the `crontab` file: `0 12 * * * cd /home/luklambr/Programs/lunchbot && ./lunchbot.py --channel town-square --message '@all lunchtime!' >> /home/luklambr/Programs/lunchbot/log.txt`.
+As an example, one could add the following line to the `crontab` file:
+`0 12 * * * cd /home/luklambr/Programs/lunchbot && ./lunchbot.py --channel town-square --message '@all lunchtime!' > /home/luklambr/Programs/lunchbot/log.txt 2> /home/luklambr/Programs/lunchbot/log.txt`.
 This will post the message '@all lunchtime!' at exactly 12h every day in the 'Town Square' channel of the Mattermost group where the incoming webhook was created. The textual output of the script is redirected to a log file `log.txt` so you can investigate potential errors.
 If everything went well, you should see something like this in the specified Mattermost channel:
 

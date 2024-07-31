@@ -10,7 +10,7 @@ if __name__=='__main__':
     location = os.path.abspath(os.path.join(__file__,'../'))
     cmd = 'cd {}'.format(location)
     cmd += ' && ./check_birthdays.py -i birthdays.json -c town-square'
-    cmd += ' >> log.txt'
+    cmd += ' > log.txt 2> log.txt'
     hour = 8
     minute = 0
     crontab = '{} {} * * * {}'.format(minute, hour, cmd)
