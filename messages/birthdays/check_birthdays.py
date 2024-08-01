@@ -68,15 +68,31 @@ if __name__=='__main__':
     for name, date in sorted(dates.items()):
         # first warning, a few days in advance
         if (date - datetime.timedelta(days=3)) == datetime.date.today():
-            m = "Hi @all, please be reminded that @{}'s birthday is coming soon".format(name)
-            m += " (on {}/{})!".format(date.day, date.month)
-            m += " @{}, please prepare a birthday cake for your dear colleagues".format(name)
-            m += " (for example this one: {})".format(random.choice(cake_urls))
-            messages.append(m)
+            # message for channel members
+            if name.lower()==name:
+                m = "Attention @all, please be aware that @{}'s birthday is coming soon".format(name)
+                m += " (on {}/{})!".format(date.day, date.month)
+                m += " @{}, please do not forget to prepare a birthday cake".format(name)
+                m += " for your dear colleagues".format(name)
+                m += " (for example this one: {}).".format(random.choice(cake_urls))
+                messages.append(m)
+            # message for non-channel members
+            else:
+                m = "Attention @all, please be aware that {}'s birthday is coming soon".format(name)
+                m += " (on {}/{})!".format(date.day, date.month)
+                m += " You may also remind {} to prepare a birthday cake".format(name)
+                m += " (for example this one: {}).".format(random.choice(cake_urls))
+                messages.append(m)
         # on the morning of the day itself
         if date == datetime.date.today():
-            m = "Hi @all, final reminder of @{}'s birthday today!".format(name)
-            messages.append(m)
+            # message for channel members
+            if name.lower()==name:
+                m = "Hi @all, final reminder of @{}'s birthday today!".format(name)
+                messages.append(m)
+            # message for non-channel members
+            else:
+                m = "Hi @all, final reminder of {}'s birthday today!".format(name)
+                messages.append(m)
     print('Found following birthday messages to be sent today:')
     for message in messages: print('  - {}'.format(message))
 
