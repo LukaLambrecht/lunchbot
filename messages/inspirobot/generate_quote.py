@@ -34,7 +34,7 @@ if __name__=='__main__':
     imgurl = get_quote_url()
 
     # format the message
-    message = '@all, here\'s your inspiration for today:\n{}'.format(imgurl)
+    message = '@all, think about that!\n{}'.format(imgurl)
 
     # send the message
     send_lunchbot_message(message=message, channel=args.channel, verbose=True)
