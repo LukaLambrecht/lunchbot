@@ -6,3 +6,6 @@ URL.py
 
 # ignore log file
 log.txt
+
+# ignore internal info for cms physics briefings
+messages/cms-physics-briefings/latest.txt
