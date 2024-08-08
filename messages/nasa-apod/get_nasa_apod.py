@@ -40,7 +40,7 @@ if __name__=='__main__':
     (baseurl, imgurl) = get_urls()
 
     # format the message
-    message = 'Hi all, here\'s NASA\'s astronomy picture of the day:\n{}'.format(imgurl)
+    message = 'Hi @all, here\'s NASA\'s astronomy picture of the day:\n{}'.format(imgurl)
     message += '\n(read the explanation [here]({})).'.format(baseurl)
 
     # send the message
