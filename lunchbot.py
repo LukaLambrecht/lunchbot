@@ -61,7 +61,7 @@ if __name__=='__main__':
 
     # send the message
     send_lunchbot_message(
-            message=message,
-            channel=channel,
+            message=args.message,
+            channel=args.channel,
             verbose=True
     )
