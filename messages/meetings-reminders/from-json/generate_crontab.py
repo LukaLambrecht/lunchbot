@@ -25,7 +25,7 @@ if __name__=='__main__':
 
     # set path to lunchbot directory
     thisdir = os.path.abspath(os.path.dirname(__file__))
-    lunchbotdir = os.path.abspath(os.path.join(thisdir, '../../'))
+    lunchbotdir = os.path.abspath(os.path.join(thisdir, '../../../'))
 
     # loop over meetings
     crons = []
