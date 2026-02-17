@@ -1,0 +1,5 @@
+# ignore log file
+log.txt
+
+# ignore private sheet url
+sheeturl.py

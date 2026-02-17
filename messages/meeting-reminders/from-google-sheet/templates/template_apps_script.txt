@@ -1,0 +1,109 @@
+function generateCrontabRules() {
+  /*
+  Generate a set of lunchbot crontab rules from the current data.
+  */
+
+  // Get current data from the sheet
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const data = sheet.getDataRange().getValues();
+  if (data.length < 2) {
+    SpreadsheetApp.getUi().alert("No data found.");
+    return;
+  }
+  const headers = data[0];
+  const rows = data.slice(1);
+
+  // Map column names to index
+  const colIndex = {};
+  headers.forEach((header, i) => {
+    colIndex[header] = i;
+  });
+
+  // Check if required columns are present
+  const requiredCols = ['Day', 'Hour', 'Minutes'];
+  for (let col of requiredCols) {
+    if (!(col in colIndex)) {
+      SpreadsheetApp.getUi().alert(`Missing required column: ${col}`);
+      return;
+    }
+  }
+
+  // Initialize possible days (needed to correctly wrap margins)
+  const DAYS = ["mon","tue","wed","thu","fri","sat","sun"];
+
+  // Set path to lunchbot on local system
+  // Todo: generate this automatically
+  const lunchbotDir = "/home/llambre1/Programs/lunchbot";
+
+  // Initialize list of crontab rules
+  let rules = [];
+
+  // Loop over rows in the sheet
+  rows.forEach(row => {
+    const dayRaw = row[colIndex['Day']];
+    const meetingHour = parseInt(row[colIndex['Hour']]);
+    const meetingMinute = parseInt(row[colIndex['Minutes']]);
+    const margin = colIndex['Margin'] !== undefined 
+      ? parseInt(row[colIndex['Margin']] || 0)
+      : 0;
+
+    // Skip empty or incomplete rows
+    if (!dayRaw || isNaN(meetingHour) || isNaN(meetingMinute)) return;
+
+    // Parsing
+    const day = dayRaw.toString().substring(0,3).toLowerCase();
+    const message = row[colIndex['Message']] || null;
+    const url = row[colIndex['URL']] || null;
+    const user = row[colIndex['User']] || null;
+    const channel = row[colIndex['Channel']] || null;
+
+    // Subtract margin
+    let totalMinutes = meetingHour * 60 + meetingMinute - margin;
+    while (totalMinutes < 0) {
+      totalMinutes += 24 * 60;
+      let dayIndex = DAYS.indexOf(day);
+      day = DAYS[(dayIndex - 1 + 7) % 7];
+    }
+    const hour = Math.floor(totalMinutes / 60);
+    const minute = totalMinutes % 60;
+
+    // Build message
+    let msg = "Reminder";
+    if (user) msg += ` to @${user}`;
+    if (message) msg += `: ${message}`;
+    if (url) msg += ` (link: ${url})`;
+
+    // Escape single quotes
+    msg = msg.replace(/'/g, "'\\''");
+
+    // Build command
+    let cmd = `cd ${lunchbotDir} && ./lunchbot.py -m '${msg}'`;
+    if (channel) cmd += ` -c ${channel}`;
+    cmd += " > log.txt 2>&1";
+
+    // Build cron rule
+    const rule = `${minute} ${hour} * * ${day} ${cmd}`;
+    rules.push(rule);
+  });
+
+  if (rules.length === 0) {
+    SpreadsheetApp.getUi().alert("No valid rows found.");
+    return;
+  }
+
+  // Write output to another tab
+  let outputSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Crontab");
+  if (!outputSheet) {
+    outputSheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("Crontab");
+  }
+  outputSheet.clear();
+  const outputHeader = "This tab is automatically generated, do not edit.";
+  outputSheet.getRange(1, 1).setValue(outputHeader);
+  rules.forEach((rule, i) => {
+    outputSheet.getRange(i+2, 1).setValue(rule);
+  });
+
+  // Also display output in popup window
+  const output = "Copy-paste into crontab:\n\n" + rules.join("\n");
+  SpreadsheetApp.getUi().alert(output);
+}
