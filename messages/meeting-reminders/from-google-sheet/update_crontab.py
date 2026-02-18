@@ -48,6 +48,7 @@ def generate_crontab_rules_from_df(df):
 
         day, hour, minute = subtract_margin(day, meeting_hour, meeting_minute, margin)
 
+        # make message
         msg = "Reminder"
         if pd.notna(row.get('User')):
             msg += f" to @{row['User']}"
@@ -56,7 +57,13 @@ def generate_crontab_rules_from_df(df):
         if pd.notna(row.get('URL')):
             msg += f" (link: {row['URL']})"
 
-        cmd = f"cd {LUNCHBOT_DIR} && ./lunchbot.py -m '{msg}' > log.txt 2>&1"
+        # make command
+        channel = None
+        if pd.notna(row.get('Channel')): channel = row['Channel']
+        cmd = f"cd {LUNCHBOT_DIR} && ./lunchbot.py"
+        cmd += f" -m '{msg}'"
+        if channel is not None: cmd += f" -c {channel}"
+        cmd += " > log.txt 2>&1"
 
         rules.append(f"{minute} {hour} * * {day} {cmd}")
 
@@ -77,9 +84,9 @@ def update_crontab(rules):
     else:
         new_cron = current
 
-    new_cron += f"\n{marker_start}\n"
+    new_cron += f"{marker_start}\n"
     new_cron += "\n".join(rules)
-    new_cron += f"\n{marker_end}\n"
+    new_cron += f"\n{marker_end}"
 
     subprocess.run(["crontab", "-"], input=new_cron, text=True)
 
